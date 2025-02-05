@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         EXE_NAME = "stock-trading.exe"
-        BUILD_DIR = "C:\Project\stock\stock-recommendation\stock-trading-program"
-        FRONTEND_BUILD_DIR = "C:\Project\stock\stock-recommendation\stock-trading-program\frontend\build"
-        BACKEND_BUILD_DIR = "C:\Project\stock\stock-recommendation\stock-trading-program\backend"
-        WEB_SERVER_PATH = "C:\inetpub\wwwroot\downloads"
+        BUILD_DIR = "C:\\Project\\stock\\stock-recommendation\\stock-trading-program"
+        FRONTEND_BUILD_DIR = "C:\\Project\\stock\\stock-recommendation\\stock-trading-program\\frontend\\build"
+        BACKEND_BUILD_DIR = "C:\\Project\\stock\\stock-recommendation\\stock-trading-program\\backend"
+        WEB_SERVER_PATH = "C:\\inetpub\\wwwroot\\downloads"
     }
 
     stages {
