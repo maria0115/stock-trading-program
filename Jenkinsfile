@@ -23,6 +23,10 @@ pipeline {
                 }
                 bat """
                 cd ${BUILD_DIR}\\frontend
+                if not exist public\\index.html (
+                    echo "ERROR: public/index.html is missing!"
+                    exit 1
+                )
                 npm install
                 call node_modules\\.bin\\react-scripts build
                 """
