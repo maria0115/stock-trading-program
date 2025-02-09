@@ -24,7 +24,7 @@ pipeline {
                 bat """
                 cd ${BUILD_DIR}\\frontend
                 npm install
-                npm run build
+                call node_modules\\.bin\\react-scripts build
                 """
             }
         }
@@ -32,8 +32,14 @@ pipeline {
         stage('Prepare Backend') {
             steps {
                 script {
-                    echo "Copying Frontend build to Backend..."
+                    echo "Checking if frontend build exists..."
                 }
+                bat """
+                if not exist ${FRONTEND_BUILD_DIR} (
+                    echo "ERROR: Frontend build folder not found!"
+                    exit 1
+                )
+                """
                 bat """
                 mkdir ${BACKEND_BUILD_DIR}\\frontend_build
                 robocopy ${FRONTEND_BUILD_DIR} ${BACKEND_BUILD_DIR}\\frontend_build /E
