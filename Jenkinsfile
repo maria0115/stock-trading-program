@@ -23,11 +23,18 @@ pipeline {
                 }
                 bat """
                 cd ${BUILD_DIR}\\frontend
-                if not exist public\\index.html (
-                    echo "ERROR: public/index.html is missing!"
+                if not exist src\\index.js (
+                    echo "ERROR: src/index.js is missing!"
                     exit 1
                 )
-                npm install
+                if not exist node_modules (
+                    echo "ERROR: node_modules folder not found! Running npm install..."
+                    npm install
+                )
+                if not exist node_modules\\.bin\\react-scripts (
+                    echo "ERROR: react-scripts not found! Installing manually..."
+                    npm install react-scripts --save
+                )
                 call node_modules\\.bin\\react-scripts build
                 """
             }
