@@ -28,8 +28,10 @@ pipeline {
 
                 cd %FRONTEND_DIR%
                 
-                if not exist "%INDEX_FILE%" (
-                    echo "ERROR: src/index.js is missing!"
+                if exist "%INDEX_FILE%" (
+                    echo "✅ index.js 파일이 정상적으로 존재합니다."
+                ) else (
+                    echo "❌ ERROR: src/index.js is missing!"
                     exit /b 1
                 )
 
