@@ -22,23 +22,32 @@ pipeline {
                     echo "Building Frontend..."
                 }
                 bat """
-                cd ${BUILD_DIR}\\frontend
-                if not exist src\\index.js (
+                set FRONTEND_DIR=${BUILD_DIR}\\frontend
+                set INDEX_FILE=%FRONTEND_DIR%\\src\\index.js
+                set NODE_MODULES_DIR=%FRONTEND_DIR%\\node_modules
+
+                cd %FRONTEND_DIR%
+                
+                if not exist "%INDEX_FILE%" (
                     echo "ERROR: src/index.js is missing!"
-                    exit 1
+                    exit /b 1
                 )
-                if not exist node_modules (
+
+                if not exist "%NODE_MODULES_DIR%" (
                     echo "ERROR: node_modules folder not found! Running npm install..."
-                    npm install
+                    npm install || exit /b 1
                 )
-                if not exist node_modules\\.bin\\react-scripts (
+
+                if not exist "%NODE_MODULES_DIR%\\.bin\\react-scripts" (
                     echo "ERROR: react-scripts not found! Installing manually..."
-                    npm install react-scripts --save
+                    npm install react-scripts --save || exit /b 1
                 )
-                call node_modules\\.bin\\react-scripts build
+
+                call "%NODE_MODULES_DIR%\\.bin\\react-scripts" build || exit /b 1
                 """
             }
         }
+
 
         stage('Prepare Backend') {
             steps {
