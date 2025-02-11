@@ -93,7 +93,7 @@ pipeline {
 
                 :: Conda 환경 활성화 테스트
                 echo "Activating Conda environment..."
-                call conda activate stock-recommendation || (echo " ERROR: Failed to activate Conda environment" & exit /b 1)
+                call activate stock-recommendation || (echo " ERROR: Failed to activate Conda environment" & exit /b 1)
                 python --version || (echo " ERROR: Python is not installed or not in PATH" & exit /b 1)
 
                 :: venv가 없으면 새로 생성
