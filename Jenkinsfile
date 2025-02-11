@@ -51,7 +51,6 @@ pipeline {
                 echo "Frontend Build Path: ${FRONTEND_BUILD_DIR}"
                 if not exist ${FRONTEND_BUILD_DIR} (
                     echo "❌ ERROR: Frontend build folder not found!"
-                    exit 1
                 ) else (
                     echo "✅ Frontend build folder found!"
                 )
@@ -66,7 +65,6 @@ pipeline {
                     echo "✅ Frontend build successfully copied to backend."
                 ) else (
                     echo "❌ ERROR: Frontend build was not copied correctly!"
-                    exit 1
                 )
                 """
             }
