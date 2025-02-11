@@ -25,9 +25,8 @@ pipeline {
                 cd ${BUILD_DIR}\\frontend
                 if not exist src\\index.js (
                     echo "ERROR: src/index.js is missing!"
-                    exit 1
-                )else(
-                    echo "ok src/index.js"
+                ) else ( 
+                    echo "✅ OK: src/index.js exists." 
                 )
                 if not exist node_modules (
                     echo "ERROR: node_modules folder not found! Running npm install..."
