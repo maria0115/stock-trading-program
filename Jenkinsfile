@@ -48,17 +48,30 @@ pipeline {
                     echo "Checking if frontend build exists..."
                 }
                 bat """
+                echo "Frontend Build Path: ${FRONTEND_BUILD_DIR}"
                 if not exist ${FRONTEND_BUILD_DIR} (
-                    echo "ERROR: Frontend build folder not found!"
+                    echo "❌ ERROR: Frontend build folder not found!"
                     exit 1
+                ) else (
+                    echo "✅ Frontend build folder found!"
                 )
                 """
                 bat """
-                mkdir ${BACKEND_BUILD_DIR}\\frontend_build
+                echo "Copying frontend build to backend..."
+                mkdir ${BACKEND_BUILD_DIR}\\frontend_build || echo "ℹ️ INFO: Directory already exists."
                 robocopy ${FRONTEND_BUILD_DIR} ${BACKEND_BUILD_DIR}\\frontend_build /E
+
+                :: 복사된 파일 확인
+                if exist ${BACKEND_BUILD_DIR}\\frontend_build\\index.html (
+                    echo "✅ Frontend build successfully copied to backend."
+                ) else (
+                    echo "❌ ERROR: Frontend build was not copied correctly!"
+                    exit 1
+                )
                 """
             }
         }
+
 
         stage('Setup Python Virtual Environment') {  // ✅ venv 설정 단계 추가
             steps {
