@@ -22,34 +22,25 @@ pipeline {
                     echo "Building Frontend..."
                 }
                 bat """
-                set FRONTEND_DIR=${BUILD_DIR}\\frontend
-                set INDEX_FILE=%FRONTEND_DIR%\\src\\index.js
-                set NODE_MODULES_DIR=%FRONTEND_DIR%\\node_modules
-
-                cd %FRONTEND_DIR%
-                
-                if exist "%INDEX_FILE%" (
-                    echo "✅ index.js 파일이 정상적으로 존재합니다."
-                ) else (
-                    echo "❌ ERROR: src/index.js is missing!"
-                    exit /b 1
+                cd ${BUILD_DIR}\\frontend
+                if not exist src\\index.js (
+                    echo "ERROR: src/index.js is missing!"
+                    exit 1
+                )else(
+                    echo ok src/index.js
                 )
-
-                if not exist "%NODE_MODULES_DIR%" (
+                if not exist node_modules (
                     echo "ERROR: node_modules folder not found! Running npm install..."
-                    npm install || exit /b 1
+                    npm install
                 )
-
-                if not exist "%NODE_MODULES_DIR%\\.bin\\react-scripts" (
+                if not exist node_modules\\.bin\\react-scripts (
                     echo "ERROR: react-scripts not found! Installing manually..."
-                    npm install react-scripts --save || exit /b 1
+                    npm install react-scripts --save
                 )
-
-                call "%NODE_MODULES_DIR%\\.bin\\react-scripts" build || exit /b 1
+                call node_modules\\.bin\\react-scripts build
                 """
             }
         }
-
 
         stage('Prepare Backend') {
             steps {
