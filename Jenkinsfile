@@ -66,6 +66,8 @@ pipeline {
                 bat """
                 cd ${BACKEND_BUILD_DIR}
                 if not exist venv (
+                    activate stock-recommendation || exit /b 1
+                    python --version || exit /b 1
                     python -m venv venv
                 )
                 venv\\Scripts\\activate
