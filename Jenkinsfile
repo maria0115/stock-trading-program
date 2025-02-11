@@ -66,15 +66,23 @@ pipeline {
                     echo "Setting up Python Virtual Environment..."
                 }
                 bat """
+                chcp 65001 > nul
                 cd ${BACKEND_BUILD_DIR}
+                :: Conda 환경 활성화 및 Python 확인
+                call conda activate stock-recommendation || exit /b 1
+                python --version || (echo "❌ ERROR: Python is not installed or not in PATH" & exit /b 1)
+
+                :: venv가 없으면 새로 생성
                 if not exist venv (
-                    activate stock-recommendation || exit /b 1
-                    python --version || exit /b 1
-                    python -m venv venv
+                    echo "Creating Python Virtual Environment..."
+                    python -m venv venv || (echo "❌ ERROR: Failed to create venv" & exit /b 1)
                 )
-                venv\\Scripts\\activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
+                :: venv 활성화 후 패키지 설치
+                call venv\\Scripts\\activate || (echo "❌ ERROR: Failed to activate venv" & exit /b 1)
+                echo "✅ Virtual Environment activated successfully."
+
+                pip install --upgrade pip || (echo "❌ ERROR: Failed to upgrade pip" & exit /b 1)
+                pip install -r requirements.txt || (echo "❌ ERROR: Failed to install dependencies" & exit /b 1)
                 """
             }
         }
