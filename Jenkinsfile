@@ -47,35 +47,37 @@ pipeline {
                 script {
                     echo "Checking if frontend build exists..."
                 }
-                bat """
-                echo "Frontend Build Path: ${FRONTEND_BUILD_DIR}"
-                if not exist ${FRONTEND_BUILD_DIR} (
-                    echo "❌ ERROR: Frontend build folder not found!"
-                    exit /b 1
-                ) else (
-                    echo "✅ Frontend build folder found!"
-                )
-                """
-                bat """
-                echo "Copying frontend build to backend..."
-                mkdir ${BACKEND_BUILD_DIR}\\frontend_build || echo "ℹ️ INFO: Directory already exists."
-                robocopy ${FRONTEND_BUILD_DIR} ${BACKEND_BUILD_DIR}\\frontend_build /E
-                """
-                bat """
-                if exist ${BACKEND_BUILD_DIR}\\frontend_build\\index.html (
-                    echo "✅ Frontend build successfully copied to backend."
-                ) else (
-                    echo "❌ ERROR: Frontend build was not copied correctly!"
-                    exit /b 1
-                )
-                """
-                bat "exit /b 0" // 🔥 `ERRORLEVEL`을 0으로 초기화하여 Jenkins가 실패로 인식하지 않도록 함
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {  // 🚀 오류를 잡고 다음 스테이지로 진행
+                    bat """
+                    echo "Frontend Build Path: ${FRONTEND_BUILD_DIR}"
+                    if not exist ${FRONTEND_BUILD_DIR} (
+                        echo " ERROR: Frontend build folder not found!"
+                        exit /b 1
+                    ) else (
+                        echo " Frontend build folder found!"
+                    )
+                    """
+                    bat """
+                    echo "Copying frontend build to backend..."
+                    mkdir ${BACKEND_BUILD_DIR}\\frontend_build || echo "INFO: Directory already exists."
+                    robocopy ${FRONTEND_BUILD_DIR} ${BACKEND_BUILD_DIR}\\frontend_build /E
+                    """
+                    bat """
+                    if exist ${BACKEND_BUILD_DIR}\\frontend_build\\index.html (
+                        echo " Frontend build successfully copied to backend."
+                    ) else (
+                        echo " ERROR: Frontend build was not copied correctly!"
+                        exit /b 1
+                    )
+                    """
+                    bat "exit /b 0" // 🔥 `ERRORLEVEL`을 0으로 초기화하여 Jenkins가 실패로 인식하지 않도록 함
+                }
             }
         }
 
 
 
-        stage('Setup Python Virtual Environment') {  // ✅ venv 설정 단계 추가
+        stage('Setup Python Virtual Environment') {  //  venv 설정 단계 추가
             steps {
                 script {
                     echo "Setting up Python Virtual Environment..."
@@ -91,24 +93,24 @@ pipeline {
 
                 :: Conda 환경 활성화 테스트
                 echo "Activating Conda environment..."
-                call conda activate stock-recommendation || (echo "❌ ERROR: Failed to activate Conda environment" & exit /b 1)
-                python --version || (echo "❌ ERROR: Python is not installed or not in PATH" & exit /b 1)
+                call conda activate stock-recommendation || (echo " ERROR: Failed to activate Conda environment" & exit /b 1)
+                python --version || (echo " ERROR: Python is not installed or not in PATH" & exit /b 1)
 
                 :: venv가 없으면 새로 생성
                 if not exist venv (
                     echo "Creating Python Virtual Environment..."
-                    python -m venv venv || (echo "❌ ERROR: Failed to create venv" & exit /b 1)
+                    python -m venv venv || (echo " ERROR: Failed to create venv" & exit /b 1)
                 )
 
                 :: venv 활성화 후 패키지 설치
-                call venv\\Scripts\\activate || (echo "❌ ERROR: Failed to activate venv" & exit /b 1)
-                echo "✅ Virtual Environment activated successfully."
+                call venv\\Scripts\\activate || (echo " ERROR: Failed to activate venv" & exit /b 1)
+                echo " Virtual Environment activated successfully."
 
                 :: pip 업그레이드 및 패키지 설치
-                pip install --upgrade pip || (echo "❌ ERROR: Failed to upgrade pip" & exit /b 1)
-                pip install -r requirements.txt || (echo "❌ ERROR: Failed to install dependencies" & exit /b 1)
+                pip install --upgrade pip || (echo " ERROR: Failed to upgrade pip" & exit /b 1)
+                pip install -r requirements.txt || (echo " ERROR: Failed to install dependencies" & exit /b 1)
 
-                echo "✅ Virtual Environment setup completed successfully."
+                echo " Virtual Environment setup completed successfully."
                 """
             }
         }
