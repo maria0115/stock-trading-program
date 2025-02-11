@@ -58,6 +58,22 @@ pipeline {
             }
         }
 
+        stage('Setup Python Virtual Environment') {  // ✅ venv 설정 단계 추가
+            steps {
+                script {
+                    echo "Setting up Python Virtual Environment..."
+                }
+                bat """
+                cd ${BACKEND_BUILD_DIR}
+                if not exist venv (
+                    python -m venv venv
+                )
+                call venv\\Scripts\\activate
+                pip install --upgrade pip
+                """
+            }
+        }
+
         stage('Install Backend Dependencies') {
             steps {
                 script {
@@ -65,6 +81,7 @@ pipeline {
                 }
                 bat """
                 cd ${BACKEND_BUILD_DIR}
+                venv\\Scripts\\activate
                 pip install -r requirements.txt
                 """
             }
@@ -77,7 +94,8 @@ pipeline {
                 }
                 bat """
                 cd ${BACKEND_BUILD_DIR}
-                nuitka --standalone --mingw64 --output-dir=dist app/main.py
+                venv\\Scripts\\activate
+                nuitka --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py
                 """
             }
         }
