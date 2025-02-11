@@ -27,7 +27,7 @@ pipeline {
                     echo "ERROR: src/index.js is missing!"
                     exit 1
                 )else(
-                    echo ok src/index.js
+                    echo "ok src/index.js"
                 )
                 if not exist node_modules (
                     echo "ERROR: node_modules folder not found! Running npm install..."
