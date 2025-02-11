@@ -22,11 +22,12 @@ pipeline {
                     echo "Building Frontend..."
                 }
                 bat """
+                chcp 65001 > nul
                 cd ${BUILD_DIR}\\frontend
                 if not exist src\\index.js (
                     echo "ERROR: src/index.js is missing!"
                 ) else ( 
-                    echo "✅ OK: src/index.js exists." 
+                    echo "OK: src/index.js exists." 
                 )
                 if not exist node_modules (
                     echo "ERROR: node_modules folder not found! Running npm install..."
