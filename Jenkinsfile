@@ -148,7 +148,16 @@ pipeline {
                     mkdir dist
 
                     :: Nuitka 빌드 실행 (로그 출력 추가)
-                    nuitka --onefile --lto=no --disable-console --assume-yes-for-downloads --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py --show-progress --show-scons
+                    nuitka --jobs=4 --onefile --standalone --mingw64 ^
+                        --output-dir=dist app/main.py ^
+                        --cache-dir="%NUITKA_CACHE_DIR%" ^
+                        --assume-yes-for-downloads ^
+                        --lto=yes ^ 
+                        --include-data-dir=venv=venv ^
+                        --show-progress --show-scons ^
+                        --nofollow-import-to=venv/Lib/site-packages/nuitka ^
+                        --nofollow-import-to=venv/Lib/site-packages/Nuitka-2.6.4.dist-info
+
 
                     :: 빌드 성공 여부 확인
                     if exist dist\\stock-trading.exe (
@@ -179,6 +188,14 @@ pipeline {
                     echo "EXE 다운로드 링크: http://localhost/downloads/${EXE_NAME}"
                 }
             }
+        }
+    }
+    post {
+        success {
+            echo 'EXE 빌드 및 배포 성공!'
+        }
+        failure {
+            echo '빌드 실패! 로그 확인 필요'
         }
     }
 }
