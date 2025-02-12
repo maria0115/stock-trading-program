@@ -82,36 +82,38 @@ pipeline {
                 script {
                     echo "Setting up Python Virtual Environment..."
                 }
-                bat """
-                chcp 65001 > nul
-                cd ${BACKEND_BUILD_DIR}
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') { 
+                    bat """
+                    chcp 65001 > nul
+                    cd ${BACKEND_BUILD_DIR}
 
-                :: 현재 PATH에서 conda와 python 확인
-                echo "Checking Python & Conda paths..."
-                where python
-                where conda
+                    :: 현재 PATH에서 conda와 python 확인
+                    echo "Checking Python & Conda paths..."
+                    where python
+                    where conda
 
-                :: Conda 환경 활성화 테스트
-                echo "Activating Conda environment..."
-                call activate stock-recommendation || (echo " ERROR: Failed to activate Conda environment" & exit /b 1)
-                python --version || (echo " ERROR: Python is not installed or not in PATH" & exit /b 1)
+                    :: Conda 환경 활성화 테스트
+                    echo "Activating Conda environment..."
+                    call activate stock-recommendation || (echo " ERROR: Failed to activate Conda environment" & exit /b 1)
+                    python --version || (echo " ERROR: Python is not installed or not in PATH" & exit /b 1)
 
-                :: venv가 없으면 새로 생성
-                if not exist venv (
-                    echo "Creating Python Virtual Environment..."
-                    python -m venv venv || (echo " ERROR: Failed to create venv" & exit /b 1)
-                )
+                    :: venv가 없으면 새로 생성
+                    if not exist venv (
+                        echo "Creating Python Virtual Environment..."
+                        python -m venv venv || (echo " ERROR: Failed to create venv" & exit /b 1)
+                    )
 
-                :: venv 활성화 후 패키지 설치
-                call venv\\Scripts\\activate || (echo " ERROR: Failed to activate venv" & exit /b 1)
-                echo " Virtual Environment activated successfully."
+                    :: venv 활성화 후 패키지 설치
+                    call venv\\Scripts\\activate || (echo " ERROR: Failed to activate venv" & exit /b 1)
+                    echo " Virtual Environment activated successfully."
 
-                :: pip 업그레이드 및 패키지 설치
-                pip install --upgrade pip || (echo " ERROR: Failed to upgrade pip" & exit /b 1)
-                pip install -r requirements.txt || (echo " ERROR: Failed to install dependencies" & exit /b 1)
+                    :: pip 업그레이드 및 패키지 설치
+                    python -m pip install --upgrade pip || (echo " ERROR: Failed to upgrade pip" & exit /b 1)
+                    python -m pip install -r requirements.txt || (echo " ERROR: Failed to install dependencies" & exit /b 1)
 
-                echo " Virtual Environment setup completed successfully."
-                """
+                    echo " Virtual Environment setup completed successfully."
+                    """
+                }
             }
         }
 
