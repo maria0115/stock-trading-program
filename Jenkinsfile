@@ -7,6 +7,7 @@ pipeline {
         FRONTEND_BUILD_DIR = "${WORKSPACE}\\frontend\\build"
         BACKEND_BUILD_DIR = "${WORKSPACE}\\backend"
         WEB_SERVER_PATH = "C:\\inetpub\\wwwroot\\downloads"
+        NUITKA_CACHE_DIR = "C:\\nuitka_cache"
     }
 
     stages {
@@ -147,7 +148,7 @@ pipeline {
                     mkdir dist
 
                     :: Nuitka 빌드 실행 (로그 출력 추가)
-                    nuitka --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py --show-progress --show-scons
+                    nuitka --onefile --no-dependency --lto=no --disable-console --assume-yes-for-downloads --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py --show-progress --show-scons
 
                     :: 빌드 성공 여부 확인
                     if exist dist\\stock-trading.exe (
