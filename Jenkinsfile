@@ -136,11 +136,28 @@ pipeline {
                 script {
                     echo "Building EXE with Nuitka..."
                 }
-                bat """
-                cd ${BACKEND_BUILD_DIR}
-                venv\\Scripts\\activate
-                nuitka --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py
-                """
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {  
+                    bat """
+                    cd ${BACKEND_BUILD_DIR}
+                    call venv\\Scripts\\activate || (echo "❌ ERROR: Failed to activate venv" & exit /b 1)
+                    echo "✅ Virtual Environment activated."
+
+                    :: 빌드 디렉토리 초기화
+                    if exist dist rmdir /s /q dist
+                    mkdir dist
+
+                    :: Nuitka 빌드 실행 (로그 출력 추가)
+                    nuitka --standalone --mingw64 --nofollow-import-to=venv --output-dir=dist app/main.py --show-progress --show-scons
+
+                    :: 빌드 성공 여부 확인
+                    if exist dist\\stock-trading.exe (
+                        echo "✅ EXE build completed successfully."
+                    ) else (
+                        echo "❌ ERROR: EXE build failed!"
+                        exit /b 1
+                    )
+                    """
+                }
             }
         }
 
